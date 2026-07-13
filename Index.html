@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en" style="color-scheme: light;">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>PPL Ledger — 4 Week Program</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root{
+    --paper:#EDEEEA;
+    --paper-2:#E2E4DE;
+    --ink:#1B2321;
+    --ink-soft:#4B5751;
+    --steel:#3E5C58;
+    --steel-dark:#2A413E;
+    --hazard:#E8A317;
+    --hazard-deep:#C4820B;
+    --line:#C7CBC2;
+    --done:#37664F;
+    --paper-card:#F6F6F2;
+    color-scheme: light;
+  }
+  /* Force light palette regardless of OS/app dark mode — do not let the
+     browser auto-invert or re-theme any of these colors. */
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#EDEEEA; --paper-2:#E2E4DE; --ink:#1B2321; --ink-soft:#4B5751;
+      --steel:#3E5C58; --steel-dark:#2A413E; --hazard:#E8A317; --hazard-deep:#C4820B;
+      --line:#C7CBC2; --done:#37664F; --paper-card:#F6F6F2; color-scheme: light;
+    }
+  }
+  *{box-sizing:border-box;}
+  html{background:var(--paper);}
+  body{
+    margin:0; background:var(--paper) !important; color:var(--ink) !important;
+    font-family:'Archivo',sans-serif;
+    padding-bottom:60px;
+  }
+  .wrap{max-width:820px;margin:0 auto;padding:0 18px;}
+
+  /* HERO */
+  header.hero{
+    background:var(--steel-dark) !important;
+    color:var(--paper) !important;
+    padding:38px 18px 30px;
+    position:relative;
+    overflow:hidden;
+    border-bottom:6px solid var(--hazard);
+  }
+  header.hero::before{
+    content:"";
+    position:absolute; right:-40px; top:-40px;
+    width:220px;height:220px;border-radius:50%;
+    background:radial-gradient(circle, rgba(232,163,23,0.18) 0%, transparent 70%);
+  }
+  .hero-inner{max-width:820px;margin:0 auto;position:relative;}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px; letter-spacing:2px; text-transform:uppercase;
+    color:var(--hazard) !important; margin:0 0 6px;
+  }
+  h1{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:52px; line-height:0.95; margin:0 0 10px; letter-spacing:1px;
+    color:var(--paper) !important;
+  }
+  .hero-stats{display:flex; gap:22px; margin-top:18px; flex-wrap:wrap;}
+  .stat{font-family:'JetBrains Mono',monospace;}
+  .stat .n{font-size:26px; font-weight:700; color:var(--hazard) !important; display:block; line-height:1;}
+  .stat .l{font-size:11px; color:#C9D2CE !important; letter-spacing:1px; text-transform:uppercase;}
+
+  /* WEEK NAV */
+  nav.weeks{
+    display:flex; gap:8px; margin:22px 0 18px; overflow-x:auto; padding-bottom:2px;
+  }
+  nav.weeks button{
+    font-family:'JetBrains Mono',monospace;
+    font-weight:700; font-size:13px; letter-spacing:1px;
+    background:var(--paper-2) !important; color:var(--ink-soft) !important;
+    border:2px solid var(--line); border-radius:3px;
+    padding:9px 16px; cursor:pointer; white-space:nowrap;
+    transition:.15s;
+  }
+  nav.weeks button.active{
+    background:var(--steel-dark) !important; color:var(--paper) !important; border-color:var(--steel-dark);
+  }
+  .week-note{
+    font-size:13px; color:var(--ink-soft) !important; margin:0 0 20px; padding:10px 14px;
+    background:var(--paper-card) !important; border-left:3px solid var(--hazard); border-radius:2px;
+  }
+
+  /* DAY TABS within week */
+  .day-block{margin-bottom:16px; border:1px solid var(--line); border-radius:6px; overflow:hidden; background:var(--paper-card) !important;}
+  .day-head{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:14px 16px; cursor:pointer; background:var(--steel) !important;
+    color:var(--paper) !important;
+  }
+  .day-head .tag{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:1.5px;
+    background:rgba(0,0,0,0.2) !important; color:var(--paper) !important; padding:3px 8px; border-radius:2px; margin-right:10px;
+  }
+  .day-head h2{font-family:'Bebas Neue'; font-size:24px; margin:0; display:inline; letter-spacing:0.5px; color:var(--paper) !important;}
+  .day-head .chevron{transition:.2s; font-size:14px; color:var(--paper) !important;}
+  .day-head.open .chevron{transform:rotate(180deg);}
+  .day-progress{font-family:'JetBrains Mono',monospace; font-size:12px; color:#D8DED9 !important;}
+
+  .day-body{padding:4px 0; display:none;}
+  .day-body.open{display:block;}
+
+  .ex-row{border-top:1px solid var(--line);}
+  .ex-main{padding:14px 16px;}
+  .ex-name{font-weight:700; font-size:15px; margin:0 0 2px; color:var(--ink) !important;}
+  .ex-name.checked{text-decoration:line-through; color:var(--ink-soft) !important;}
+  .ex-scheme{
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--steel-dark) !important;
+    background:rgba(62,92,88,0.1) !important; display:inline-block; padding:2px 7px; border-radius:3px; margin-right:6px;
+  }
+  .ex-tempo{font-size:11.5px; color:var(--ink-soft) !important; margin-top:4px;}
+  .ex-swap{font-size:11.5px; color:var(--hazard-deep) !important; margin-top:6px; cursor:pointer; text-decoration:underline dotted; display:inline-block;}
+  .ex-swap-box{display:none; font-size:12px; background:#FBF1DA !important; color:var(--ink) !important; padding:8px 10px; margin-top:6px; border-radius:4px; border:1px solid #E8D6A3;}
+  .ex-swap-box.open{display:block;}
+
+  /* SET PILLS — the per-set tick row */
+  .set-row{display:flex; align-items:center; gap:8px; margin-top:10px; flex-wrap:wrap;}
+  .set-label{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--ink-soft) !important; letter-spacing:1px; width:100%;}
+  .set-pill{
+    width:34px; height:34px; border-radius:50%; border:2px solid var(--steel);
+    background:var(--paper-card) !important; color:var(--steel-dark) !important;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px;
+    cursor:pointer; flex-shrink:0; transition:.15s;
+  }
+  .set-pill.done{background:var(--done) !important; border-color:var(--done); color:white !important;}
+
+  .ex-log{display:flex; gap:6px; margin-top:10px;}
+  .ex-log input{
+    width:70px; font-family:'JetBrains Mono',monospace; font-size:12px;
+    border:1px solid var(--line); border-radius:4px; padding:6px 7px;
+    background:#FFFFFF !important; color:var(--ink) !important;
+  }
+  .ex-log label{font-size:10px; color:var(--ink-soft) !important; display:block; margin-bottom:2px; font-family:'JetBrains Mono',monospace;}
+
+  /* SIDE SECTIONS */
+  .section-title{
+    font-family:'Bebas Neue'; font-size:26px; margin:34px 0 10px; letter-spacing:0.5px;
+    border-bottom:3px solid var(--hazard); display:inline-block; padding-bottom:2px;
+    color:var(--ink) !important;
+  }
+  .flat-list{list-style:none; margin:0; padding:0;}
+  .flat-list li{
+    display:flex; align-items:center; gap:10px; padding:10px 0; border-top:1px solid var(--line); font-size:14px;
+    color:var(--ink) !important;
+  }
+  .flat-list li:first-child{border-top:none;}
+  .mini-check{
+    width:20px; height:20px; border:2px solid var(--steel); border-radius:4px; flex-shrink:0; cursor:pointer;
+    background:var(--paper-card) !important;
+  }
+  .mini-check.checked{background:var(--done) !important; border-color:var(--done);}
+
+  .overload-card{
+    background:var(--paper-card) !important; border:1px solid var(--line); border-radius:6px; padding:16px; margin-top:10px;
+  }
+  .overload-card .rule{display:flex; gap:12px; padding:8px 0; border-top:1px dashed var(--line); font-size:13.5px; color:var(--ink) !important;}
+  .overload-card .rule:first-of-type{border-top:none;}
+  .overload-card .wk{
+    font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--hazard-deep) !important;
+    flex-shrink:0; width:56px;
+  }
+
+  footer{text-align:center; font-size:11px; color:var(--ink-soft) !important; margin-top:40px; font-family:'JetBrains Mono',monospace;}
+  .reset-btn{
+    display:block; margin:30px auto 0; background:none !important; border:1px solid var(--line); color:var(--ink-soft) !important;
+    font-family:'JetBrains Mono',monospace; font-size:11px; padding:8px 14px; border-radius:4px; cursor:pointer;
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <p class="eyebrow">4-Week Recomposition Block</p>
+    <h1>PPL LEDGER</h1>
+    <div class="hero-stats">
+      <div class="stat"><span class="n">130→124</span><span class="l">Bodyweight Target (kg)</span></div>
+      <div class="stat"><span class="n">5kg</span><span class="l">Starting Load</span></div>
+      <div class="stat"><span class="n">6/wk</span><span class="l">Training Days</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <nav class="weeks" id="weekNav"></nav>
+  <p class="week-note" id="weekNote"></p>
+  <div id="daysContainer"></div>
+
+  <h2 class="section-title">Progressive Overload Rule</h2>
+  <div class="overload-card">
+    <div class="rule"><span class="wk">Wk 1</span><span>Learn each movement. Log every weight and rep — this is your baseline, not a test.</span></div>
+    <div class="rule"><span class="wk">Wk 2</span><span>Add 1-2 reps to every set. If last week's top set hit the rep ceiling easily, add +1kg per dumbbell instead.</span></div>
+    <div class="rule"><span class="wk">Wk 3</span><span>Reps maxed at range (e.g. 4×12)? Bump weight +2-2.5kg and reset to the bottom of the rep range.</span></div>
+    <div class="rule"><span class="wk">Wk 4</span><span>Repeat the pattern. Target: heavier than Week 1 on every single lift by the end of the block.</span></div>
+  </div>
+
+  <h2 class="section-title">Cardio + Recovery</h2>
+  <ul class="flat-list" id="cardioList"></ul>
+
+  <h2 class="section-title">Nutrition Anchors</h2>
+  <ul class="flat-list" id="nutritionList"></ul>
+
+  <button class="reset-btn" id="resetBtn">Reset all tracked data</button>
+  <footer>Tap a set number to mark it done · Tap an exercise's swap line for an alt · Data saves automatically</footer>
+</div>
+
+<script>
+const TEMPO_NOTE = "3-1-1 tempo: 3s lowering, 1s pause, 1s lift — control beats speed for muscle retention.";
+const PREFIX = "log:";
+
+const PUSH = [
+  {n:"Flat DB Press", s:"4×8-12", sets:4, swap:"No flat bench? Use floor press — same tempo, same reps."},
+  {n:"Incline DB Press", s:"3×10-12", sets:3, swap:"No incline bench? Stack a pillow/cushion under your back on the floor."},
+  {n:"Seated DB Shoulder Press", s:"3×10-12", sets:3, swap:"No seat? Standing press works — brace your core harder."},
+  {n:"Lateral Raises", s:"3×12-15", sets:3, swap:"No dumbbells free? Use resistance bands anchored under your feet."},
+  {n:"Cable/Band Tricep Pushdown", s:"3×12-15", sets:3, swap:"No cable machine? DB overhead tricep extension, 2-hand grip."},
+  {n:"Push-ups", s:"2× to failure", sets:2, swap:"Too easy? Elevate feet. Too hard? Do them on knees or against a wall."},
+];
+const PULL = [
+  {n:"Lat Pulldown / Assisted Pull-up", s:"4×8-12", sets:4, swap:"No machine? Band-assisted pull-ups or inverted rows under a sturdy table."},
+  {n:"Seated Cable Row", s:"4×10-12", sets:4, swap:"No cable? Bent-over DB row, both arms, same rep range."},
+  {n:"Single-arm DB Row", s:"3×10-12/side", sets:3, swap:"Brace on a bench or sturdy chair if no flat bench available."},
+  {n:"Face Pulls", s:"3×15", sets:3, swap:"No cable/band anchor point? Reverse DB flyes, light weight, strict form."},
+  {n:"DB Bicep Curl", s:"3×12-15", sets:3, swap:"Alternate arms if grip fatigues before target reps."},
+  {n:"Hammer Curl", s:"2×12-15", sets:2, swap:"None needed — neutral grip is joint-friendly at any weight."},
+];
+const LEGS = [
+  {n:"Goblet Squat", s:"4×10-12", sets:4, swap:"Knees uncomfortable? Box squat to a chair, same rep scheme."},
+  {n:"Leg Press / DB Romanian Deadlift", s:"3×10-12", sets:3, swap:"No leg press? DB RDL — hinge at hips, soft knees, feel the hamstring stretch."},
+  {n:"Walking Lunges", s:"3×10/leg", sets:3, swap:"Balance issue? Reverse lunges holding onto a wall or rail."},
+  {n:"Leg Curl / Glute Bridge", s:"3×12-15", sets:3, swap:"No leg curl machine? Glute bridges — pause 1s at the top each rep."},
+  {n:"Standing Calf Raise", s:"3×15-20", sets:3, swap:"Use a step edge for extra range of motion if available."},
+  {n:"Plank", s:"3×40-60s", sets:3, swap:"Too hard? Knee plank. Too easy? Add a shoulder tap each rep."},
+];
+
+const WEEKS = [
+  {label:"Week 1", note:"Foundation week. Focus on learning each movement pattern with clean form. Don't chase weight yet — chase consistency."},
+  {label:"Week 2", note:"Add reps where you hit the top of the range comfortably last week. Cardio should feel steady, not brutal."},
+  {label:"Week 3", note:"First weight bumps land here. If a lift maxed out its rep range in Week 2, add load and reset reps to the bottom."},
+  {label:"Week 4", note:"Push for PRs on every lift vs. Week 1. Check in on weight, measurements, and progress photos this week."},
+];
+
+const DAY_DEFS = [
+  {key:"d1", tag:"DAY 1", title:"PUSH", ex:PUSH},
+  {key:"d2", tag:"DAY 2", title:"PULL", ex:PULL},
+  {key:"d3", tag:"DAY 3", title:"LEGS", ex:LEGS},
+  {key:"d4", tag:"DAY 4", title:"PUSH", ex:PUSH},
+  {key:"d5", tag:"DAY 5", title:"PULL", ex:PULL},
+  {key:"d6", tag:"DAY 6", title:"LEGS", ex:LEGS},
+];
+
+const CARDIO = [
+  "25-30 min incline walk after Day 1 (Push)",
+  "25-30 min incline walk after Day 2 (Pull)",
+  "25-30 min incline walk after Day 4 (Push)",
+  "25-30 min incline walk after Day 5 (Pull)",
+  "Day 7: 30 min easy walk, full rest from lifting",
+];
+const NUTRITION = [
+  "Calorie deficit: ~500-700 kcal/day below maintenance",
+  "Protein: 150-180g/day — this protects muscle in a deficit",
+  "Water: 3-4L/day given your training volume",
+  "Weigh in same day, same time, same conditions weekly",
+];
+
+let currentWeek = 0;
+let openDays = new Set();
+let state = {};
+
+function keyFor(w, dayKey, i, field){ return `${PREFIX}w${w}-${dayKey}-${i}-${field}`; }
+function setKey(w, dayKey, i, setIdx){ return `${PREFIX}w${w}-${dayKey}-${i}-set${setIdx}`; }
+
+async function loadAll(){
+  try{
+    const res = await window.storage.list(PREFIX);
+    if(res && res.keys){
+      for(const k of res.keys){
+        try{ const r = await window.storage.get(k); if(r) state[k] = r.value; }catch(e){}
+      }
+    }
+  }catch(e){ /* no data yet — fine, start fresh */ }
+}
+
+async function save(key, value){
+  state[key] = value;
+  try{ await window.storage.set(key, value); }catch(e){ /* silent — local state still updated */ }
+}
+
+function renderWeekNav(){
+  const nav = document.getElementById('weekNav');
+  nav.innerHTML = '';
+  WEEKS.forEach((w, i)=>{
+    const b = document.createElement('button');
+    b.textContent = w.label;
+    if(i===currentWeek) b.classList.add('active');
+    b.onclick = ()=>{ currentWeek = i; renderAll(); };
+    nav.appendChild(b);
+  });
+  document.getElementById('weekNote').textContent = WEEKS[currentWeek].note;
+}
+
+function renderDays(){
+  const container = document.getElementById('daysContainer');
+  container.innerHTML = '';
+  DAY_DEFS.forEach((day)=>{
+    const block = document.createElement('div');
+    block.className = 'day-block';
+
+    let doneExCount = day.ex.filter((ex,i)=>{
+      for(let s=1;s<=ex.sets;s++){ if(state[setKey(currentWeek,day.key,i,s)]!=='1') return false; }
+      return true;
+    }).length;
+
+    const isOpen = openDays.has(day.key);
+
+    const head = document.createElement('div');
+    head.className = 'day-head' + (isOpen ? ' open' : '');
+    head.innerHTML = `<div><span class="tag">${day.tag}</span><h2 style="display:inline">${day.title}</h2></div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="day-progress">${doneExCount}/${day.ex.length}</span>
+        <span class="chevron">▾</span>
+      </div>`;
+
+    const body = document.createElement('div');
+    body.className = 'day-body' + (isOpen ? ' open' : '');
+
+    day.ex.forEach((ex, i)=>{
+      const wKey = keyFor(currentWeek, day.key, i, 'weight');
+      const rKey = keyFor(currentWeek, day.key, i, 'reps');
+
+      let doneSets = 0;
+      let pills = '';
+      for(let s=1; s<=ex.sets; s++){
+        const sk = setKey(currentWeek, day.key, i, s);
+        const isDone = state[sk]==='1';
+        if(isDone) doneSets++;
+        pills += `<div class="set-pill ${isDone?'done':''}" data-setkey="${sk}">${s}</div>`;
+      }
+      const exComplete = doneSets === ex.sets;
+
+      const row = document.createElement('div');
+      row.className = 'ex-row';
+      row.innerHTML = `
+        <div class="ex-main">
+          <p class="ex-name ${exComplete?'checked':''}"><span class="ex-scheme">${ex.s}</span>${ex.n}</p>
+          <p class="ex-tempo">${TEMPO_NOTE}</p>
+          <div class="set-row">
+            <span class="set-label">SETS COMPLETED — ${doneSets}/${ex.sets}</span>
+            ${pills}
+          </div>
+          <p class="ex-swap" data-swapfor="${day.key}-${i}">No equipment? Tap for a swap ↓</p>
+          <div class="ex-swap-box" id="swap-${day.key}-${i}">${ex.swap}</div>
+          <div class="ex-log">
+            <div><label>TOP SET WEIGHT (KG)</label><input type="text" inputmode="decimal" data-wkey="${wKey}" value="${state[wKey]||''}" placeholder="e.g. 7"></div>
+            <div><label>REPS DONE</label><input type="text" inputmode="numeric" data-rkey="${rKey}" value="${state[rKey]||''}" placeholder="e.g. 10"></div>
+          </div>
+        </div>`;
+      body.appendChild(row);
+    });
+
+    head.onclick = ()=>{
+      if(openDays.has(day.key)) openDays.delete(day.key);
+      else openDays.add(day.key);
+      renderDays();
+    };
+
+    block.appendChild(head);
+    block.appendChild(body);
+    container.appendChild(block);
+  });
+
+  container.querySelectorAll('.set-pill').forEach(el=>{
+    el.addEventListener('click', async (e)=>{
+      e.stopPropagation();
+      const k = el.getAttribute('data-setkey');
+      const newVal = state[k]==='1' ? '0' : '1';
+      await save(k, newVal);
+      renderDays();
+    });
+  });
+  container.querySelectorAll('.ex-swap').forEach(el=>{
+    el.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const id = 'swap-' + el.getAttribute('data-swapfor');
+      document.getElementById(id).classList.toggle('open');
+    });
+  });
+  container.querySelectorAll('input[data-wkey]').forEach(el=>{
+    el.addEventListener('click', e=>e.stopPropagation());
+    el.addEventListener('change', async ()=>{
+      await save(el.getAttribute('data-wkey'), el.value);
+    });
+  });
+  container.querySelectorAll('input[data-rkey]').forEach(el=>{
+    el.addEventListener('click', e=>e.stopPropagation());
+    el.addEventListener('change', async ()=>{
+      await save(el.getAttribute('data-rkey'), el.value);
+    });
+  });
+}
+
+function renderFlatList(id, items, prefix){
+  const ul = document.getElementById(id);
+  ul.innerHTML = '';
+  items.forEach((text, i)=>{
+    const k = `${PREFIX}${prefix}-${i}`;
+    const checked = state[k]==='1';
+    const li = document.createElement('li');
+    li.innerHTML = `<div class="mini-check ${checked?'checked':''}" data-key="${k}"></div><span>${text}</span>`;
+    ul.appendChild(li);
+  });
+  ul.querySelectorAll('.mini-check').forEach(el=>{
+    el.addEventListener('click', async ()=>{
+      const k = el.getAttribute('data-key');
+      const newVal = state[k]==='1' ? '0' : '1';
+      await save(k, newVal);
+      renderFlatList(id, items, prefix);
+    });
+  });
+}
+
+function renderAll(){
+  renderWeekNav();
+  renderDays();
+  renderFlatList('cardioList', CARDIO, 'cardio');
+  renderFlatList('nutritionList', NUTRITION, 'nutrition');
+}
+
+document.getElementById('resetBtn').addEventListener('click', async ()=>{
+  if(!confirm('Clear all logged sets, weights, and checkmarks? This cannot be undone.')) return;
+  try{
+    const res = await window.storage.list(PREFIX);
+    if(res && res.keys){
+      for(const k of res.keys){ try{ await window.storage.delete(k); }catch(e){} }
+    }
+  }catch(e){}
+  state = {};
+  renderAll();
+});
+
+(async function init(){
+  await loadAll();
+  openDays.add(DAY_DEFS[0].key);
+  renderAll();
+})();
+</script>
+
+</body>
+</html>
